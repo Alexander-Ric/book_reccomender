@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Documentación API{% endblock %}
+
+{% block content %}
+  <h2>Documentación de la API</h2>
+
+  <h3>POST /api/recommend</h3>
+  <p>Devuelve recomendaciones de libros en formato JSON.</p>
+
+  <h4>Body (JSON) de ejemplo</h4>
+  <pre>{
+  "favorite_genre": "Fantasia",
+  "min_rating": 4.0,
+  "limit": 3
+}</pre>
+
+  <h4>Respuesta (ejemplo)</h4>
+  <pre>{
+  "recommendations": [
+    {
+      "id": 6,
+      "title": "El Señor de los Anillos",
+      "author": "J. R. R. Tolkien",
+      "genre": "Fantasía",
+      "description": "...",
+      "rating": 4.9
+    }
+  ]
+}</pre>
+
+  <h4>Endpoints disponibles</h4>
+  <ul>
+    <li><strong>GET /</strong> – Formulario HTML para pedir recomendaciones.</li>
+    <li><strong>POST /recommendations</strong> – Devuelve página HTML con libros recomendados.</li>
+    <li><strong>POST /api/recommend</strong> – Endpoint JSON para integraciones.</li>
+    <li><strong>GET /health</strong> – Comprobación rápida del estado del servicio.</li>
+    <li><strong>GET /docs</strong> – Esta documentación.</li>
+  </ul>
+{% endblock %}

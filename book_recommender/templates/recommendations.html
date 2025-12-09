@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Recomendaciones{% endblock %}
+
+{% block content %}
+  <h2>Recomendaciones</h2>
+
+  {% if recommendations %}
+    <ul>
+      {% for book in recommendations %}
+        <li>
+          <strong>{{ book.title }}</strong> — {{ book.author }}<br />
+          <em>{{ book.genre }}</em> | Rating: {{ "%.2f"|format(book.rating or 0) }}
+          <p>{{ book.description }}</p>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No se han encontrado libros con esos criterios.</p>
+  {% endif %}
+
+  <a href="{{ url_for('index') }}">Volver al formulario</a>
+{% endblock %}

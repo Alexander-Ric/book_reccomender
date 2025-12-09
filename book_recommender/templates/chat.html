@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Chatbot de recomendación{% endblock %}
+
+{% block content %}
+  <h2>Chatbot de recomendación de libros</h2>
+
+  <div id="chat-container" style="border: 1px solid #ccc; padding: 1rem; max-width: 700px; height: 400px; overflow-y: auto; margin-bottom: 1rem;">
+    <!-- Mensajes se insertan aquí -->
+  </div>
+
+  <form id="chat-form" style="max-width: 700px;">
+    <label for="user-input">Escribe tu mensaje:</label>
+    <textarea id="user-input" rows="3" style="width: 100%;"></textarea>
+    <button type="submit" style="margin-top: 0.5rem;">Enviar</button>
+  </form>
+
+  <script>
+    const chatContainer = document.getElementById("chat-container");
+    const chatForm = document.getElementById("chat-form");
+    const userInput = document.getElementById("user-input");
+
+    // Historial en el lado del cliente: lista de {role, content}
+    const messages = [];
+
+    function addMessageToUI(role, content) {
+      const div = document.createElement("div");
+      div.style.marginBottom = "0.5rem";
+      div.innerHTML = `<strong>${role === "user" ? "Tú" : "Bot"}:</strong> ${content}`;
+      chatContainer.appendChild(div);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    function addRecommendationsToUI(recommendations) {
+      if (!recommendations || recommendations.length === 0) return;
+
+      const div = document.createElement("div");
+      div.style.marginBottom = "0.5rem";
+
+      let html = "<strong>Libros recomendados:</strong><ul>";
+      for (const b of recommendations) {
+        html += `<li><strong>${b.title}</strong> — ${b.author} <em>(${b.genre}, rating ${b.rating ?? "N/A"})</em></li>`;
+      }
+      html += "</ul>";
+      div.innerHTML = html;
+
+      chatContainer.appendChild(div);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    chatForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const text = userInput.value.trim();
+      if (!text) return;
+
+      // Añadimos mensaje del usuario al historial y a la UI
+      messages.push({ role: "user", content: text });
+      addMessageToUI("user", text);
+      userInput.value = "";
+
+      // Llamada al backend
+      try {
+        const resp = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ messages }),
+        });
+
+        if (!resp.ok) {
+          addMessageToUI("assistant", "Ha ocurrido un error al llamar al servidor.");
+          return;
+        }
+
+        const data = await resp.json();
+        const reply = data.reply || "";
+        const recommendations = data.recommendations || [];
+
+        // Añadimos respuesta del bot al historial y a la UI
+        messages.push({ role: "assistant", content: reply });
+        addMessageToUI("assistant", reply);
+        addRecommendationsToUI(recommendations);
+
+      } catch (err) {
+        console.error(err);
+        addMessageToUI("assistant", "Error de conexión con el servidor.");
+      }
+    });
+  </script>
+{% endblock %}
