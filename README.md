@@ -333,8 +333,8 @@ docker build -t book-recommender .
 ### 8.2. Ejecutar el contenedor
 
 ```bash
-docker run -p 5000:5000 -e GEMINI_API_KEY="TU_API_KEY_DE_GEMINI" book-recommender
-```
+docker pull alexanderric/book-recommender:latest
+docker run -p 5000:5000 -e GEMINI_API_KEY="TU_API_KEY_DE_GEMINI" alexanderric/book-recommender:latest
 
 Después podrás acceder a la aplicación en:
 
